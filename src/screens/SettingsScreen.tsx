@@ -1,13 +1,13 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { Moon, Sun, Check } from 'lucide-react-native';
-import { useTheme } from '../context/ThemeContext';
-import { useLanguage } from '../context/LanguageContext';
 import clsx from 'clsx';
+// Импортируем нашу ViewModel вместо контекстов
+import { useSettings } from '../hooks/useSettings';
 
 export const SettingsScreen = () => {
-  const { theme, toggleTheme } = useTheme();
-  const { language, setLanguage, t } = useLanguage();
+  // Подключаем ViewModel (Пункт 1: Разделение логики и UI)
+  const { theme, toggleTheme, language, setLanguage, t } = useSettings();
 
   return (
       <ScrollView className="flex-1 p-4" style={{ backgroundColor: theme === 'dark' ? '#111827' : '#f9fafb' }}>

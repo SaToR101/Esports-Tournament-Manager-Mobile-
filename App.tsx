@@ -7,6 +7,8 @@ import { LanguageProvider, useLanguage } from './src/context/LanguageContext';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { DetailsScreen } from './src/screens/DetailsScreen';
 import { SettingsScreen } from './src/screens/SettingsScreen';
+import { ProDetailsScreen } from './src/screens/ProDetailsScreen';
+import { TeamScreen } from './src/screens/TeamScreen';
 import { View, Text } from 'react-native';
 
 const Stack = createNativeStackNavigator();
@@ -47,6 +49,16 @@ function Navigation() {
                     name="Settings"
                     component={SettingsScreen}
                     options={{ title: t('settings') }}
+                />
+                <Stack.Screen
+                    name="ProDetails"
+                    component={ProDetailsScreen}
+                    options={{ title: 'Pro Tournament' }}
+                />
+                <Stack.Screen
+                    name="TeamDetails"
+                    component={TeamScreen}
+                    options={{ title: 'Team Roster' }}
                 />
             </Stack.Navigator>
             <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
