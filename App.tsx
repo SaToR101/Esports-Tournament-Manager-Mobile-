@@ -53,12 +53,12 @@ function Navigation() {
                 <Stack.Screen
                     name="ProDetails"
                     component={ProDetailsScreen}
-                    options={{ title: 'Pro Tournament' }}
+                    options={{ title: t('pro_tournament_title') }}
                 />
                 <Stack.Screen
                     name="TeamDetails"
                     component={TeamScreen}
-                    options={{ title: 'Team Roster' }}
+                    options={{ title: t('team_roster_title') }}
                 />
             </Stack.Navigator>
             <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />

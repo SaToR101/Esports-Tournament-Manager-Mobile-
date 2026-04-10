@@ -7,12 +7,38 @@ import { ProTournament } from '../services/api';
 
 export const ProDetailsScreen = ({ route, navigation }: any) => {
     const { theme } = useTheme();
-    // Вытягиваем t для перевода!
     const { t } = useLanguage();
 
     const tournament: ProTournament = route.params?.tournament;
 
     if (!tournament) return null;
+
+    // --- УМНАЯ ФУНКЦИЯ ДЛЯ СТАТУСА ---
+    const getTournamentStatus = () => {
+        // 1. Проверяем, прислало ли API готовый текстовый статус
+        if (tournament.status === 'running') return t('status_running');
+        if (tournament.status === 'finished') return t('finished');
+        if (tournament.status === 'upcoming') return t('status_upcoming');
+        if (tournament.status === 'canceled') return t('status_canceled');
+
+        // 2. Если API статус не дало (или он кривой), считаем сами по датам
+        const now = new Date();
+        const beginDate = tournament.begin_at ? new Date(tournament.begin_at) : null;
+        const endDate = tournament.end_at ? new Date(tournament.end_at) : null;
+
+        if (endDate && endDate < now) {
+            return t('finished'); // Дата конца в прошлом
+        }
+        if (beginDate && beginDate <= now && (!endDate || endDate >= now)) {
+            return t('status_running'); // Уже начался, но еще не закончился
+        }
+        if (beginDate && beginDate > now) {
+            return t('status_upcoming'); // Начнется в будущем
+        }
+
+        // 3. Если вообще никаких данных нет
+        return t('tba');
+    };
 
     return (
         <ScrollView className="flex-1 p-4" style={{ backgroundColor: theme === 'dark' ? '#111827' : '#f9fafb' }}>
@@ -44,7 +70,8 @@ export const ProDetailsScreen = ({ route, navigation }: any) => {
                             {t('status')}
                         </Text>
                         <Text className="font-bold text-lg capitalize" style={{ color: theme === 'dark' ? '#ffffff' : '#111827' }}>
-                            {tournament.status || (tournament.end_at && new Date(tournament.end_at) < new Date() ? t('finished') : t('tba'))}
+                            {/* Вызываем нашу новую функцию здесь: */}
+                            {getTournamentStatus()}
                         </Text>
                     </View>
 

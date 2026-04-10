@@ -42,6 +42,11 @@ export const translations = {
     no_data: 'No data or offline',
     active_roster: 'Active Roster',
     roster_unknown: 'Roster unknown',
+    pro_tournament_title: 'Pro Tournament',
+    team_roster_title: 'Team Roster',
+    status_running: 'Ongoing',
+    status_upcoming: 'Upcoming',
+    status_canceled: 'Canceled',
 
   },
   ru: {
@@ -84,5 +89,10 @@ export const translations = {
     no_data: 'Нет сети или данных',
     active_roster: 'Текущий состав',
     roster_unknown: 'Состав неизвестен',
+    pro_tournament_title: 'Про турнир',
+    team_roster_title: 'Состав команды',
+    status_running: 'Идет сейчас',
+    status_upcoming: 'Ожидается',
+    status_canceled: 'Отменен',
   },
 };

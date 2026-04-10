@@ -14,18 +14,18 @@ export interface ProTournament {
         name: string;
         image_url: string | null;
     };
-    // ДОБАВИЛИ id СЮДА:
+
     teams: { id: number; name: string; image_url: string | null }[];
 }
 
-// --- НОВЫЕ ДАННЫЕ ДЛЯ ИГРОКОВ ---
+
 export interface Player {
     id: number;
-    name: string; // Никнейм (s1mple, m0NESY)
-    first_name: string | null; // Имя
-    last_name: string | null;  // Фамилия
-    image_url: string | null;  // Фотка
-    nationality: string | null; // Страна (RU, UA, FR и тд)
+    name: string;
+    first_name: string | null;
+    last_name: string | null;
+    image_url: string | null;
+    nationality: string | null;
 }
 
 export interface TeamDetails {
@@ -55,19 +55,19 @@ export const fetchTeamDetails = async (teamId: number): Promise<TeamDetails | nu
 };
 
 export const fetchProTournaments = async (): Promise<{ data: ProTournament[], isOffline: boolean }> => {
-    // Пункт 3: Мониторинг сети
+
     const netState = await NetInfo.fetch();
     const isConnected = netState.isConnected;
 
     if (isConnected) {
         try {
-            // Пункт 2: Web-API (Получаем турниры по CS2)
+            // Web-API (Получаем турниры по CS2)
             const response = await axios.get(API_URL, {
                 headers: { Authorization: `Bearer ${API_KEY}` }
             });
             const tournaments = response.data;
 
-            // Пункт 4: Кэширование (Оффлайн-режим)
+            // Кэширование (Оффлайн-режим)
             await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(tournaments));
             return { data: tournaments, isOffline: false };
         } catch (error) {
@@ -75,7 +75,7 @@ export const fetchProTournaments = async (): Promise<{ data: ProTournament[], is
         }
     }
 
-    // Пункт 4: Достаем из кэша, если нет инета
+    // Достаем из кэша, если нет инета
     const cached = await AsyncStorage.getItem(CACHE_KEY);
     if (cached) {
         return { data: JSON.parse(cached), isOffline: true };
