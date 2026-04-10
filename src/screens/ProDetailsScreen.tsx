@@ -7,9 +7,9 @@ import { ProTournament } from '../services/api';
 
 export const ProDetailsScreen = ({ route, navigation }: any) => {
     const { theme } = useTheme();
-    const { language } = useLanguage();
+    // Вытягиваем t для перевода!
+    const { t } = useLanguage();
 
-    // Получаем турнир, на который кликнули
     const tournament: ProTournament = route.params?.tournament;
 
     if (!tournament) return null;
@@ -17,7 +17,7 @@ export const ProDetailsScreen = ({ route, navigation }: any) => {
     return (
         <ScrollView className="flex-1 p-4" style={{ backgroundColor: theme === 'dark' ? '#111827' : '#f9fafb' }}>
 
-            {/* Шапка с названием лиги */}
+            {/* Шапка */}
             <View className="items-center mb-6 mt-4">
                 <View className="w-24 h-24 bg-gray-200 rounded-full mb-4 items-center justify-center overflow-hidden border-2 border-indigo-500">
                     {tournament.league.image_url ? (
@@ -29,12 +29,11 @@ export const ProDetailsScreen = ({ route, navigation }: any) => {
                 <Text className="text-2xl font-bold text-center" style={{ color: theme === 'dark' ? '#ffffff' : '#111827' }}>
                     {tournament.name}
                 </Text>
-                <Text className="font-bold text-lg capitalize" style={{ color: theme === 'dark' ? '#ffffff' : '#111827' }}>
-                    {tournament.status || (tournament.end_at && new Date(tournament.end_at) < new Date() ? 'Finished' : 'TBA')}
+                <Text className="text-lg mt-1" style={{ color: theme === 'dark' ? '#9ca3af' : '#6b7280' }}>
+                    {tournament.league.name}
                 </Text>
             </View>
 
-            {/* Карточки с детальной информацией */}
             <View className="space-y-4">
 
                 {/* Статус и Тир */}
@@ -42,17 +41,17 @@ export const ProDetailsScreen = ({ route, navigation }: any) => {
                     <View className="flex-1 p-4 rounded-xl mr-2 border" style={{ backgroundColor: theme === 'dark' ? '#1f2937' : '#ffffff', borderColor: theme === 'dark' ? '#374151' : '#e5e7eb' }}>
                         <Activity size={24} color="#3b82f6" className="mb-2" />
                         <Text className="text-xs uppercase" style={{ color: theme === 'dark' ? '#9ca3af' : '#6b7280' }}>
-                            {language === 'ru' ? 'Статус' : 'Status'}
+                            {t('status')}
                         </Text>
                         <Text className="font-bold text-lg capitalize" style={{ color: theme === 'dark' ? '#ffffff' : '#111827' }}>
-                            {tournament.status}
+                            {tournament.status || (tournament.end_at && new Date(tournament.end_at) < new Date() ? t('finished') : t('tba'))}
                         </Text>
                     </View>
 
                     <View className="flex-1 p-4 rounded-xl ml-2 border" style={{ backgroundColor: theme === 'dark' ? '#1f2937' : '#ffffff', borderColor: theme === 'dark' ? '#374151' : '#e5e7eb' }}>
                         <Trophy size={24} color="#fbbf24" className="mb-2" />
                         <Text className="text-xs uppercase" style={{ color: theme === 'dark' ? '#9ca3af' : '#6b7280' }}>
-                            {language === 'ru' ? 'Уровень' : 'Tier'}
+                            {t('tier')}
                         </Text>
                         <Text className="font-bold text-lg uppercase" style={{ color: theme === 'dark' ? '#ffffff' : '#111827' }}>
                             {tournament.tier}
@@ -67,10 +66,10 @@ export const ProDetailsScreen = ({ route, navigation }: any) => {
                     </View>
                     <View>
                         <Text className="text-xs uppercase" style={{ color: theme === 'dark' ? '#9ca3af' : '#6b7280' }}>
-                            {language === 'ru' ? 'Призовой фонд' : 'Prize Pool'}
+                            {t('prize_pool')}
                         </Text>
                         <Text className="font-bold text-xl" style={{ color: theme === 'dark' ? '#ffffff' : '#111827' }}>
-                            {tournament.prizepool || (language === 'ru' ? 'Неизвестно' : 'TBA')}
+                            {tournament.prizepool || t('tba')}
                         </Text>
                     </View>
                 </View>
@@ -82,26 +81,26 @@ export const ProDetailsScreen = ({ route, navigation }: any) => {
                     </View>
                     <View>
                         <Text className="text-xs uppercase" style={{ color: theme === 'dark' ? '#9ca3af' : '#6b7280' }}>
-                            {language === 'ru' ? 'Начало' : 'Start Date'}
+                            {t('start_date')}
                         </Text>
                         <Text className="font-bold text-lg mb-1" style={{ color: theme === 'dark' ? '#ffffff' : '#111827' }}>
-                            {tournament.begin_at ? new Date(tournament.begin_at).toLocaleDateString() : 'TBA'}
+                            {tournament.begin_at ? new Date(tournament.begin_at).toLocaleDateString() : t('tba')}
                         </Text>
                         <Text className="text-xs uppercase mt-2" style={{ color: theme === 'dark' ? '#9ca3af' : '#6b7280' }}>
-                            {language === 'ru' ? 'Конец' : 'End Date'}
+                            {t('end_date')}
                         </Text>
                         <Text className="font-bold text-lg" style={{ color: theme === 'dark' ? '#ffffff' : '#111827' }}>
-                            {tournament.end_at ? new Date(tournament.end_at).toLocaleDateString() : 'TBA'}
+                            {tournament.end_at ? new Date(tournament.end_at).toLocaleDateString() : t('tba')}
                         </Text>
                     </View>
                 </View>
-
             </View>
+
             {/* --- СЕКЦИЯ КОМАНД --- */}
             {tournament.teams && tournament.teams.length > 0 && (
                 <View className="mt-6 mb-8">
                     <Text className="text-lg font-bold mb-3" style={{ color: theme === 'dark' ? '#d1d5db' : '#374151' }}>
-                        {language === 'ru' ? 'Команды-участницы' : 'Participating Teams'}
+                        {t('participating_teams')}
                     </Text>
                     <View className="flex-row flex-wrap">
                         {tournament.teams.map((team, index) => (
@@ -114,7 +113,7 @@ export const ProDetailsScreen = ({ route, navigation }: any) => {
                                     {team.image_url ? (
                                         <Image source={{ uri: team.image_url }} className="w-12 h-12" resizeMode="contain" />
                                     ) : (
-                                        <Text className="text-xs text-gray-400">No Logo</Text>
+                                        <Text className="text-xs text-gray-400">{t('no_logo')}</Text>
                                     )}
                                 </View>
                                 <Text

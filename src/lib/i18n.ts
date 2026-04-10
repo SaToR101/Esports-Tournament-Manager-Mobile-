@@ -36,6 +36,13 @@ export const translations = {
     tba: 'TBA',
     start_date: 'Start Date',
     end_date: 'End Date',
+    finished: 'Finished',
+    participating_teams: 'Participating Teams',
+    no_logo: 'No Logo',
+    no_data: 'No data or offline',
+    active_roster: 'Active Roster',
+    roster_unknown: 'Roster unknown',
+
   },
   ru: {
     app_name: 'Киберспорт Менеджер',
@@ -71,5 +78,11 @@ export const translations = {
     tba: 'Неизвестно',
     start_date: 'Начало',
     end_date: 'Конец',
+    finished: 'Завершен',
+    participating_teams: 'Команды-участницы',
+    no_logo: 'Нет лого',
+    no_data: 'Нет сети или данных',
+    active_roster: 'Текущий состав',
+    roster_unknown: 'Состав неизвестен',
   },
 };
