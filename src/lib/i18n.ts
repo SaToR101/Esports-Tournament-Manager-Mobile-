@@ -47,6 +47,16 @@ export const translations = {
     status_running: 'Ongoing',
     status_upcoming: 'Upcoming',
     status_canceled: 'Canceled',
+    by_date : 'By date',
+    by_alphabet: 'By alphabet',
+    t_search: 'Tournament search...',
+    error: 'Error',
+    title_required: 'Title is required',
+    reminder_title: '🏆 Tournament Reminder!',
+    reminder_body: 'Tournament "TITLE" is starting soon!',
+    select_image: 'Select Logo',
+    change_image: 'Change Logo',
+
 
   },
   ru: {
@@ -94,5 +104,14 @@ export const translations = {
     status_running: 'Идет сейчас',
     status_upcoming: 'Ожидается',
     status_canceled: 'Отменен',
+    by_date : 'По дате',
+    by_alphabet: 'По алфавиту',
+    t_search: 'Поиск турниров...',
+    error: 'Ошибка',
+    title_required: 'Введите название',
+    reminder_title: '🏆 Напоминание о турнире!',
+    reminder_body: 'Турнир "TITLE" скоро начнется!',
+    select_image: 'Выбрать логотип',
+    change_image: 'Изменить логотип',
   },
 };

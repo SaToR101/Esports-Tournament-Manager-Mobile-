@@ -1,7 +1,12 @@
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+// Импортируем красивые In-App уведомления
+import Toast from 'react-native-toast-message';
+
 import { ThemeProvider, useTheme } from './src/context/ThemeContext';
 import { LanguageProvider, useLanguage } from './src/context/LanguageContext';
 import { HomeScreen } from './src/screens/HomeScreen';
@@ -9,7 +14,6 @@ import { DetailsScreen } from './src/screens/DetailsScreen';
 import { SettingsScreen } from './src/screens/SettingsScreen';
 import { ProDetailsScreen } from './src/screens/ProDetailsScreen';
 import { TeamScreen } from './src/screens/TeamScreen';
-import { View, Text } from 'react-native';
 
 const Stack = createNativeStackNavigator();
 
@@ -33,33 +37,11 @@ function Navigation() {
                     },
                 }}
             >
-                <Stack.Screen
-                    name="Home"
-                    component={HomeScreen}
-                    options={{ title: t('app_name') }}
-                />
-                <Stack.Screen
-                    name="Details"
-                    component={DetailsScreen}
-                    options={({ route }: any) => ({
-                        title: route.params?.id ? t('edit_tournament') : t('add_tournament')
-                    })}
-                />
-                <Stack.Screen
-                    name="Settings"
-                    component={SettingsScreen}
-                    options={{ title: t('settings') }}
-                />
-                <Stack.Screen
-                    name="ProDetails"
-                    component={ProDetailsScreen}
-                    options={{ title: t('pro_tournament_title') }}
-                />
-                <Stack.Screen
-                    name="TeamDetails"
-                    component={TeamScreen}
-                    options={{ title: t('team_roster_title') }}
-                />
+                <Stack.Screen name="Home" component={HomeScreen} options={{ title: t('app_name') }} />
+                <Stack.Screen name="Details" component={DetailsScreen} options={({ route }: any) => ({ title: route.params?.id ? t('edit_tournament') : t('add_tournament') })} />
+                <Stack.Screen name="Settings" component={SettingsScreen} options={{ title: t('settings') }} />
+                <Stack.Screen name="ProDetails" component={ProDetailsScreen} options={{ title: t('pro_tournament_title') || 'Pro Tournament' }} />
+                <Stack.Screen name="TeamDetails" component={TeamScreen} options={{ title: t('team_roster_title') || 'Team Roster' }} />
             </Stack.Navigator>
             <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
         </NavigationContainer>
@@ -74,6 +56,10 @@ export default function App() {
                     <Navigation />
                 </LanguageProvider>
             </ThemeProvider>
+
+            {/* Компонент, который рисует выезжающие пуши поверх всего приложения */}
+            <Toast />
+
         </SafeAreaProvider>
     );
 }

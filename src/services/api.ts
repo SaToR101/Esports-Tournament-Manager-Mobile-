@@ -41,7 +41,7 @@ const CACHE_KEY = '@pro_tournaments_cache';
 
 export const fetchTeamDetails = async (teamId: number): Promise<TeamDetails | null> => {
     const netState = await NetInfo.fetch();
-    if (!netState.isConnected) return null; // Если нет инета, игроков не грузим
+    if (!netState.isConnected) return null;
 
     try {
         const response = await axios.get(`https://api.pandascore.co/teams/${teamId}`, {
