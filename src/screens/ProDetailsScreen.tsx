@@ -1,6 +1,8 @@
 import React from 'react';
-import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
-import { Trophy, Calendar, DollarSign, Activity } from 'lucide-react-native';
+// ДОБАВИЛИ Share СЮДА
+import { View, Text, ScrollView, Image, TouchableOpacity, Share } from 'react-native';
+// ДОБАВИЛИ Share2 ИКОНКУ СЮДА
+import { Trophy, Calendar, DollarSign, Activity, Share2 } from 'lucide-react-native';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
 import { ProTournament } from '../services/api';
@@ -13,37 +15,48 @@ export const ProDetailsScreen = ({ route, navigation }: any) => {
 
     if (!tournament) return null;
 
-    // --- УМНАЯ ФУНКЦИЯ ДЛЯ СТАТУСА ---
     const getTournamentStatus = () => {
-        // 1. Проверяем, прислало ли API готовый текстовый статус
         if (tournament.status === 'running') return t('status_running');
         if (tournament.status === 'finished') return t('finished');
         if (tournament.status === 'upcoming') return t('status_upcoming');
         if (tournament.status === 'canceled') return t('status_canceled');
 
-        // 2. Если API статус не дало (или он кривой), считаем сами по датам
         const now = new Date();
         const beginDate = tournament.begin_at ? new Date(tournament.begin_at) : null;
         const endDate = tournament.end_at ? new Date(tournament.end_at) : null;
 
         if (endDate && endDate < now) {
-            return t('finished'); // Дата конца в прошлом
+            return t('finished');
         }
         if (beginDate && beginDate <= now && (!endDate || endDate >= now)) {
-            return t('status_running'); // Уже начался, но еще не закончился
+            return t('status_running');
         }
         if (beginDate && beginDate > now) {
-            return t('status_upcoming'); // Начнется в будущем
+            return t('status_upcoming');
         }
-
-        // 3. Если вообще никаких данных нет
         return t('tba');
+    };
+
+    // --- ПУНКТ 4: ИНТЕГРАЦИЯ С СОЦСЕТЯМИ ---
+    const handleShare = async () => {
+        try {
+            let message = t('share_text')
+                .replace('TITLE', tournament.name)
+                .replace('TIER', tournament.tier.toUpperCase())
+                .replace('PRIZE', tournament.prizepool || t('tba'))
+                .replace('DATE', tournament.begin_at ? new Date(tournament.begin_at).toLocaleDateString() : t('tba'));
+
+            await Share.share({
+                message: message,
+            });
+        } catch (error) {
+            console.error("Ошибка при шаринге:", error);
+        }
     };
 
     return (
         <ScrollView className="flex-1 p-4" style={{ backgroundColor: theme === 'dark' ? '#111827' : '#f9fafb' }}>
 
-            {/* Шапка */}
             <View className="items-center mb-6 mt-4">
                 <View className="w-24 h-24 bg-gray-200 rounded-full mb-4 items-center justify-center overflow-hidden border-2 border-indigo-500">
                     {tournament.league.image_url ? (
@@ -62,7 +75,6 @@ export const ProDetailsScreen = ({ route, navigation }: any) => {
 
             <View className="space-y-4">
 
-                {/* Статус и Тир */}
                 <View className="flex-row justify-between">
                     <View className="flex-1 p-4 rounded-xl mr-2 border" style={{ backgroundColor: theme === 'dark' ? '#1f2937' : '#ffffff', borderColor: theme === 'dark' ? '#374151' : '#e5e7eb' }}>
                         <Activity size={24} color="#3b82f6" className="mb-2" />
@@ -70,7 +82,6 @@ export const ProDetailsScreen = ({ route, navigation }: any) => {
                             {t('status')}
                         </Text>
                         <Text className="font-bold text-lg capitalize" style={{ color: theme === 'dark' ? '#ffffff' : '#111827' }}>
-                            {/* Вызываем нашу новую функцию здесь: */}
                             {getTournamentStatus()}
                         </Text>
                     </View>
@@ -86,7 +97,6 @@ export const ProDetailsScreen = ({ route, navigation }: any) => {
                     </View>
                 </View>
 
-                {/* Призовой фонд */}
                 <View className="p-4 rounded-xl border flex-row items-center" style={{ backgroundColor: theme === 'dark' ? '#1f2937' : '#ffffff', borderColor: theme === 'dark' ? '#374151' : '#e5e7eb' }}>
                     <View className="bg-green-100 p-3 rounded-full mr-4">
                         <DollarSign size={24} color="#16a34a" />
@@ -101,7 +111,6 @@ export const ProDetailsScreen = ({ route, navigation }: any) => {
                     </View>
                 </View>
 
-                {/* Даты проведения */}
                 <View className="p-4 rounded-xl border flex-row items-center" style={{ backgroundColor: theme === 'dark' ? '#1f2937' : '#ffffff', borderColor: theme === 'dark' ? '#374151' : '#e5e7eb' }}>
                     <View className="bg-indigo-100 p-3 rounded-full mr-4">
                         <Calendar size={24} color="#4f46e5" />
@@ -123,9 +132,8 @@ export const ProDetailsScreen = ({ route, navigation }: any) => {
                 </View>
             </View>
 
-            {/* --- СЕКЦИЯ КОМАНД --- */}
             {tournament.teams && tournament.teams.length > 0 && (
-                <View className="mt-6 mb-8">
+                <View className="mt-6">
                     <Text className="text-lg font-bold mb-3" style={{ color: theme === 'dark' ? '#d1d5db' : '#374151' }}>
                         {t('participating_teams')}
                     </Text>
@@ -155,6 +163,16 @@ export const ProDetailsScreen = ({ route, navigation }: any) => {
                     </View>
                 </View>
             )}
+
+            {/* --- КНОПКА ПОДЕЛИТЬСЯ (СОЦСЕТИ) --- */}
+            <TouchableOpacity
+                onPress={handleShare}
+                className="w-full bg-indigo-600 py-4 rounded-xl items-center flex-row justify-center mt-6 mb-10 shadow-md"
+            >
+                <Share2 size={20} color="white" className="mr-2" />
+                <Text className="text-white font-bold text-lg">{t('share')}</Text>
+            </TouchableOpacity>
+
         </ScrollView>
     );
 };

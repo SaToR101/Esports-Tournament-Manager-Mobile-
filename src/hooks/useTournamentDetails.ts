@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Alert } from 'react-native';
+import { Alert, Vibration } from 'react-native';
 import { getTournamentById, saveTournament, deleteTournament } from '../lib/storage';
 import Toast from 'react-native-toast-message';
 import * as ImagePicker from 'expo-image-picker';
@@ -34,14 +34,33 @@ export const useTournamentDetails = (id: string | undefined, navigation: any, t:
         }
     }, [id, isNew]);
 
-    const pickImage = async () => {
-        if (isSaving) return; // Если уже сохраняем, не даем открыть галерею
+    // 1. ПУНКТ 3: ИСПОЛЬЗОВАНИЕ КАМЕРЫ УСТРОЙСТВА
+    const openCamera = async () => {
+        Vibration.vibrate(50); // Тактильный отклик (Platform API)
+        const { status } = await ImagePicker.requestCameraPermissionsAsync();
+        if (status !== 'granted') return Alert.alert(t('error'), 'Нужно разрешение на использование камеры');
 
+        const result = await ImagePicker.launchCameraAsync({
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 0.05,
+            base64: true,
+        });
+
+        if (!result.canceled && result.assets && result.assets[0].base64) {
+            const imageUri = `data:image/jpeg;base64,${result.assets[0].base64}`;
+            setFormData({ ...formData, image: imageUri });
+        }
+    };
+
+    // 2. ИСПОЛЬЗОВАНИЕ ГАЛЕРЕИ
+    const openGallery = async () => {
+        Vibration.vibrate(50); // Тактильный отклик
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
             aspect: [1, 1],
-            quality: 0.05, // 🔥 ЭКСТРЕМАЛЬНОЕ СЖАТИЕ! Теперь лагов базы данных не будет вообще!
+            quality: 0.05,
             base64: true,
         });
 
@@ -52,11 +71,7 @@ export const useTournamentDetails = (id: string | undefined, navigation: any, t:
     };
 
     const handleSave = async () => {
-        if (!formData.title) {
-            Alert.alert(t('error'), t('title_required'));
-            return;
-        }
-
+        if (!formData.title) return Alert.alert(t('error'), t('title_required'));
         if (isSaving) return;
         setIsSaving(true);
 
@@ -74,26 +89,18 @@ export const useTournamentDetails = (id: string | undefined, navigation: any, t:
 
             if (delay > 0) {
                 setTimeout(() => {
-                    const bodyText = t('reminder_body').replace('TITLE', formData.title);
                     Toast.show({
                         type: 'success',
                         text1: t('reminder_title'),
-                        text2: bodyText,
+                        text2: t('reminder_body').replace('TITLE', formData.title),
                         position: 'top',
                         visibilityTime: 5000,
                     });
                 }, delay);
             }
 
-            await saveTournament({
-                id: isNew ? undefined : id,
-                ...formData,
-            });
-
-            // 🔥 БЕЗОПАСНЫЙ ВЫХОД (Исправляет красный экран)
-            if (navigation.canGoBack()) {
-                navigation.goBack();
-            }
+            await saveTournament({ id: isNew ? undefined : id, ...formData });
+            if (navigation.canGoBack()) navigation.goBack();
         } catch (error) {
             console.error(error);
         } finally {
@@ -102,26 +109,20 @@ export const useTournamentDetails = (id: string | undefined, navigation: any, t:
     };
 
     const handleDelete = () => {
-        Alert.alert(
-            t('delete_tournament'),
-            t('delete_confirm'),
-            [
-                { text: t('cancel'), style: 'cancel' },
-                {
-                    text: t('delete_tournament'),
-                    style: 'destructive',
-                    onPress: async () => {
-                        setIsSaving(true); // 🔥 Включаем загрузку во время удаления
-                        await deleteTournament(id as string);
-
-                        if (navigation.canGoBack()) {
-                            navigation.goBack();
-                        }
-                    }
-                },
-            ]
-        );
+        Alert.alert(t('delete_tournament'), t('delete_confirm'), [
+            { text: t('cancel'), style: 'cancel' },
+            {
+                text: t('delete_tournament'),
+                style: 'destructive',
+                onPress: async () => {
+                    setIsSaving(true);
+                    await deleteTournament(id as string);
+                    if (navigation.canGoBack()) navigation.goBack();
+                }
+            }
+        ]);
     };
 
-    return { formData, setFormData, handleSave, handleDelete, isNew, pickImage, isSaving, isLoading };
+    // Возвращаем функции камеры и галереи
+    return { formData, setFormData, handleSave, handleDelete, isNew, openCamera, openGallery, isSaving, isLoading };
 };

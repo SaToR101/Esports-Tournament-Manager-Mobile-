@@ -1,7 +1,8 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { getFirestore } from "firebase/firestore";
+// ДОБАВИЛИ ИМПОРТ АВТОРИЗАЦИИ
+import { getAuth } from "firebase/auth";
 
-// Твои ключи от Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyAu93aK2m18sfrgwmtRedzjjw3zawTQ77g",
     authDomain: "esportsmanager-f2fb8.firebaseapp.com",
@@ -11,8 +12,8 @@ const firebaseConfig = {
     appId: "1:163598371226:web:4d87c7fa9028492d42d223"
 };
 
-// Инициализируем приложение
 const app = initializeApp(firebaseConfig);
 
-// Подключаем текстовую базу данных Firestore
 export const db = getFirestore(app);
+// ЭКСПОРТИРУЕМ МОДУЛЬ АВТОРИЗАЦИИ
+export const auth = getAuth(app);
