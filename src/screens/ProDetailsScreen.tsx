@@ -37,7 +37,6 @@ export const ProDetailsScreen = ({ route, navigation }: any) => {
         return t('tba');
     };
 
-    // --- ПУНКТ 4: ИНТЕГРАЦИЯ С СОЦСЕТЯМИ ---
     const handleShare = async () => {
         try {
             let message = t('share_text')
@@ -164,7 +163,7 @@ export const ProDetailsScreen = ({ route, navigation }: any) => {
                 </View>
             )}
 
-            {/* --- КНОПКА ПОДЕЛИТЬСЯ (СОЦСЕТИ) --- */}
+
             <TouchableOpacity
                 onPress={handleShare}
                 className="w-full bg-indigo-600 py-4 rounded-xl items-center flex-row justify-center mt-6 mb-10 shadow-md"

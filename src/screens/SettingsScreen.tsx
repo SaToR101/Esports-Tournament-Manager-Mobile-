@@ -4,7 +4,7 @@ import { Moon, Sun, Check, LogOut } from 'lucide-react-native';
 import clsx from 'clsx';
 import { useSettings } from '../hooks/useSettings';
 // Импорты для выхода
-import { signOut } from 'firebase/auth';
+import { supabase } from '../lib/supabase';
 import { auth } from '../lib/firebase';
 
 export const SettingsScreen = () => {
@@ -60,7 +60,7 @@ export const SettingsScreen = () => {
 
           {/* Кнопка Выйти */}
           <TouchableOpacity
-              onPress={() => signOut(auth)}
+              onPress={() => supabase.auth.signOut()}
               className="w-full bg-red-500 py-4 rounded-xl items-center shadow-md mt-6 flex-row justify-center"
           >
             <LogOut size={20} color="white" className="mr-2" />

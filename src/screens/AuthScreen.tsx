@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Mail, Lock, Trophy } from 'lucide-react-native';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../lib/firebase';
+import { supabase } from '../lib/supabase'; // <-- Наш новый Supabase
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
 import Toast from 'react-native-toast-message';
@@ -14,50 +13,34 @@ export const AuthScreen = () => {
     const { t } = useLanguage();
     const { theme } = useTheme();
 
-    // УМНАЯ ФУНКЦИЯ ДЛЯ ПЕРЕВОДА ОШИБОК FIREBASE
-    const getErrorMessage = (errorCode: string) => {
-        switch (errorCode) {
-            case 'auth/invalid-email': return t('err_invalid_email');
-            case 'auth/user-not-found': return t('err_user_not_found');
-            case 'auth/wrong-password': return t('err_wrong_password');
-            case 'auth/email-already-in-use': return t('err_email_in_use');
-            case 'auth/weak-password': return t('err_weak_password');
-            default: return t('err_default');
-        }
-    };
-
     const handleLogin = async () => {
-        // Заменяем страшный Alert на красивый красный Toast
-        if (!email || !password) {
-            return Toast.show({ type: 'error', text1: t('error'), text2: t('fill_all_fields') });
-        }
-
+        if (!email || !password) return Toast.show({ type: 'error', text1: t('error'), text2: t('fill_all_fields') });
         setIsLoading(true);
-        try {
-            await signInWithEmailAndPassword(auth, email.trim(), password);
-            Toast.show({ type: 'success', text1: 'Успешно!', text2: 'Вы вошли в систему' });
-        } catch (error: any) {
-            // Показываем красивую переведенную ошибку
-            Toast.show({ type: 'error', text1: t('auth_error'), text2: getErrorMessage(error.code) });
-        } finally {
-            setIsLoading(false);
-        }
+
+        const { error } = await supabase.auth.signInWithPassword({
+            email: email.trim(),
+            password: password,
+        });
+
+        if (error) Toast.show({ type: 'error', text1: t('auth_error'), text2: error.message });
+        else Toast.show({ type: 'success', text1: 'Успешно!', text2: 'Вы вошли в систему' });
+
+        setIsLoading(false);
     };
 
     const handleRegister = async () => {
-        if (!email || !password) {
-            return Toast.show({ type: 'error', text1: t('error'), text2: t('fill_all_fields') });
-        }
-
+        if (!email || !password) return Toast.show({ type: 'error', text1: t('error'), text2: t('fill_all_fields') });
         setIsLoading(true);
-        try {
-            await createUserWithEmailAndPassword(auth, email.trim(), password);
-            Toast.show({ type: 'success', text1: 'Успешно!', text2: 'Аккаунт создан' });
-        } catch (error: any) {
-            Toast.show({ type: 'error', text1: t('auth_error'), text2: getErrorMessage(error.code) });
-        } finally {
-            setIsLoading(false);
-        }
+
+        const { data, error } = await supabase.auth.signUp({
+            email: email.trim(),
+            password: password,
+        });
+
+        if (error) Toast.show({ type: 'error', text1: t('auth_error'), text2: error.message });
+        else if (data.user) Toast.show({ type: 'success', text1: 'Успешно!', text2: 'Аккаунт создан' });
+
+        setIsLoading(false);
     };
 
     return (
